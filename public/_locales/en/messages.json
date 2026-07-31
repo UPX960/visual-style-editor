@@ -1,0 +1,11 @@
+{
+  "appName": {
+    "message": "Visual Style Editor"
+  },
+  "appDescription": {
+    "message": "Visually customize websites with browser-local CSS."
+  },
+  "actionTitle": {
+    "message": "Open Visual Style Editor"
+  }
+}

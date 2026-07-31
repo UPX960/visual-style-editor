@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Visual Style Editor fixture</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: system-ui, sans-serif;
+      }
+      .hero {
+        display: grid;
+        min-height: 80vh;
+        place-items: center;
+        background: #e8e7ff;
+      }
+      .hero__content {
+        max-width: 680px;
+        padding: 40px;
+        text-align: center;
+      }
+      .hero__button {
+        padding: 12px 20px;
+        border: 0;
+        border-radius: 8px;
+        background: #5d4df5;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="hero" data-component="hero">
+      <div class="hero__content">
+        <h1>Visual editing test page</h1>
+        <p>Select this copy and change its typography, spacing or color.</p>
+        <button class="hero__button">Test button</button>
+      </div>
+    </section>
+  </body>
+</html>

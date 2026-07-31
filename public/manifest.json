@@ -1,0 +1,62 @@
+{
+  "manifest_version": 3,
+  "name": "__MSG_appName__",
+  "description": "__MSG_appDescription__",
+  "version": "0.2.0",
+  "default_locale": "en",
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "action": {
+    "default_title": "__MSG_actionTitle__",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "permissions": ["activeTab", "scripting", "storage"],
+  "optional_host_permissions": ["http://*/*", "https://*/*"],
+  "commands": {
+    "toggle-editor": {
+      "suggested_key": {
+        "default": "Alt+Shift+V",
+        "mac": "Alt+Shift+V"
+      },
+      "description": "Toggle the visual editor"
+    },
+    "undo-change": {
+      "suggested_key": {
+        "default": "Alt+Shift+Z",
+        "mac": "Alt+Shift+Z"
+      },
+      "description": "Undo the last visual edit"
+    },
+    "redo-change": {
+      "suggested_key": {
+        "default": "Alt+Shift+Y",
+        "mac": "Alt+Shift+Y"
+      },
+      "description": "Redo the last visual edit"
+    }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/*", "catalog/*"],
+      "matches": ["http://*/*", "https://*/*"]
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
+}
