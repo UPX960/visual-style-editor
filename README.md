@@ -1,10 +1,12 @@
 # Visual Style Editor
 
-Visual Style Editor is a Manifest V3 Chrome extension for visually editing a website with local CSS. It provides a Shadow DOM editor, a page inspector, responsive overrides, history, domain persistence, and clean CSS/JSON export without modifying the website’s source files or server.
+Visual Style Editor is a Manifest V3 browser extension for visually editing a website with local CSS. It provides a Shadow DOM editor, page inspector, responsive overrides, history, domain persistence, and clean CSS/JSON export without modifying the website's source files or server.
+
+**v0.3.0 adds one-click backups plus first-class Windows 10 / 11 build, packaging, Chrome, and Microsoft Edge guidance.** Windows users can follow the complete English + Arabic guide in [docs/WINDOWS.md](docs/WINDOWS.md).
 
 This repository contains the working MVP plus an advanced property inspector and a complete, searchable Google Fonts catalog. Direct-manipulation tools and the remaining asset libraries stay separated so the editor remains fast, testable, and reliable.
 
-## What works in this MVP
+## What works
 
 - Optional per-origin permission request instead of permanent access to every website.
 - Programmatic content-script registration for automatic style reapplication.
@@ -21,10 +23,11 @@ This repository contains the working MVP plus an advanced property inspector and
 - Live injected CSS, undo, redo, change timeline, element reset, and page reset.
 - Domain-local persistence with automatic reapplication after reload.
 - CSS copy/download and validated JSON import/export.
+- One-click **Backup all designs** export from Settings for a versioned JSON backup of every saved domain design.
 - Popup, options page, saved-design enable/pause/delete/export controls.
 - English and Arabic extension metadata and UI.
 - Sensitive password and payment-card inputs are intentionally excluded.
-- Unit tests, an extension-page Playwright smoke test, privacy policy, and store-listing copy.
+- Cross-platform CI, 20 unit tests, an extension-page Playwright smoke test, privacy policy, and store-listing copy.
 
 ## Architecture
 
@@ -43,51 +46,58 @@ src/
 └── types/            Shared strict TypeScript contracts
 ```
 
-The UI build uses Vite’s multi-page mode. The content script and service worker are produced as separate IIFE bundles so Chrome can execute them as classic Manifest V3 scripts. The editor’s CSS is bundled as a string and inserted only inside its Shadow DOM.
+The UI build uses Vite's multi-page mode. The content script and service worker are produced as separate IIFE bundles so Chromium browsers can execute them as classic Manifest V3 scripts. The editor's CSS is bundled as a string and inserted only inside its Shadow DOM.
 
 ## Requirements
 
-- Node.js 20 or newer
-- npm 10 or newer
-- Google Chrome 120 or newer
-- `zip` command only when running the packaging script
+### Installing a published release
+
+- Google Chrome or Microsoft Edge based on Chromium.
+- Windows 10 / 11, macOS, or Linux.
+- No Node.js requirement when loading the published extension ZIP as an unpacked extension.
+
+### Building from source
+
+- Node.js 20 or newer.
+- npm 10 or newer.
+- Windows PowerShell on Windows 10 / 11 (built in), or the `zip` command on macOS/Linux when packaging.
 
 ## Installation
 
-### Option 1: Install the prebuilt extension
+### Windows 10 / 11
 
-1. Download this repository with **Code → Download ZIP**, then extract it.
-2. Open `chrome://extensions` in Google Chrome.
-3. Enable **Developer mode** in the top-right corner.
-4. Click **Load unpacked**.
-5. Select the extracted `dist/` folder.
-6. Open any regular `http` or `https` website.
-7. Click the Visual Style Editor extension icon, then click **Activate visual editor**.
-8. Approve access to the current website when Chrome asks. The editor will appear inside the page.
+See [docs/WINDOWS.md](docs/WINDOWS.md) for the full Chrome + Edge install, update, source-build, PowerShell, and troubleshooting guide in English and Arabic.
 
-The repository also includes `visual-style-editor-extension.zip`. Extract that archive first, then select its extracted folder with **Load unpacked**. Chrome cannot load an unpacked extension directly from a ZIP file.
+Quick path:
 
-### Option 2: Build from source
+1. Download `visual-style-editor-extension.zip` from the latest GitHub Release.
+2. Extract it to a permanent folder.
+3. Chrome: open `chrome://extensions`. Edge: open `edge://extensions`.
+4. Enable **Developer mode**.
+5. Click **Load unpacked** and select the extracted folder that directly contains `manifest.json`.
+6. Pin Visual Style Editor, open a normal website, and click **Activate visual editor**.
+7. Approve access to the current site when the browser asks.
+
+Chrome and Edge cannot load an unpacked extension directly from a ZIP file. Extract it first.
+
+### Build from source
 
 ```bash
 git clone https://github.com/UPX960/visual-style-editor.git
 cd visual-style-editor
-npm install
-npm run build
+npm ci
+npm run validate
+npm run package
 ```
 
-Then open `chrome://extensions`, enable **Developer mode**, click **Load unpacked**, and select:
-
-```text
-visual-style-editor/dist
-```
+Then load `dist/` as an unpacked extension. On Windows, `npm run package` uses the built-in Windows PowerShell `Compress-Archive`; no Unix-style `zip` installation is required.
 
 ## Development
 
 Install dependencies:
 
 ```bash
-npm install
+npm ci
 ```
 
 Run the popup/options Vite development server:
@@ -96,13 +106,13 @@ Run the popup/options Vite development server:
 npm run dev
 ```
 
-Chrome cannot load the Vite development server directly as a complete extension because the background and content scripts also need extension bundles. For actual extension testing, use a production build:
+A Vite development server is not a complete browser extension because the background and content scripts also need extension bundles. For actual extension testing, use a production build:
 
 ```bash
 npm run build
 ```
 
-Rebuild after source changes, then click the extension’s reload button on `chrome://extensions`.
+Rebuild after source changes, then click the extension's reload button on `chrome://extensions` or `edge://extensions`.
 
 ## Build and package
 
@@ -117,7 +127,22 @@ npm run package
 Outputs:
 
 - `dist/` — load this folder as an unpacked extension.
-- `visual-style-editor-extension.zip` — upload-ready extension bundle whose root contains `manifest.json`.
+- `visual-style-editor-extension.zip` — packaged extension bundle whose root contains `manifest.json`.
+
+Packaging is cross-platform:
+
+- Windows 10 / 11: Windows PowerShell `Compress-Archive`.
+- macOS/Linux: system `zip` command.
+
+## Back up all saved designs
+
+Open the extension's Settings page and choose **Backup all designs**. The downloaded JSON file contains:
+
+- backup schema version,
+- UTC export timestamp,
+- every saved domain design currently stored by Visual Style Editor.
+
+This is useful before moving browser profiles, changing computers, or making large configuration changes. Per-design JSON export remains available as well.
 
 ## How domain permission works
 
@@ -127,7 +152,7 @@ The manifest declares `http://*/*` and `https://*/*` under `optional_host_permis
 https://example.com/*
 ```
 
-After approval, the service worker registers `content.js` for that origin so enabled saved CSS can be reapplied on future visits. Chrome internal pages, the Chrome Web Store, cross-origin frames without access, closed Shadow DOM, enterprise-blocked pages, and other protected surfaces cannot be edited.
+After approval, the service worker registers `content.js` for that origin so enabled saved CSS can be reapplied on future visits. Browser internal pages, extension stores, cross-origin frames without access, closed Shadow DOM, enterprise-blocked pages, and other protected surfaces cannot be edited.
 
 ## How changes are stored
 
@@ -181,7 +206,7 @@ The index is generated from the pinned `google-font-metadata` development depend
 npm run catalog
 ```
 
-The bundled catalog works without an API key. `VITE_GOOGLE_FONTS_API_KEY` is an optional developer fallback for the metadata API client. A restrictive website Content Security Policy or offline network state can prevent the external font file from loading; the editor reports that failure and keeps the CSS declaration.
+The bundled catalog works without an API key. `VITE_GOOGLE_FONTS_API_KEY` is an optional developer fallback for the metadata API client. A restrictive website Content Security Policy or offline network state can prevent an external font file from loading; the editor reports that failure and keeps the CSS declaration.
 
 ## Import safety
 
@@ -200,15 +225,17 @@ VITE_UNSPLASH_ACCESS_KEY=your_unsplash_access_key
 VITE_GOOGLE_FONTS_API_KEY=optional_metadata_api_key
 ```
 
-Do not commit `.env`. The bundled font catalog and direct image URLs work without keys. A client-side browser extension cannot make a bundled access key secret from a determined user; production Unsplash deployments should use a restricted key and follow Unsplash’s current API terms.
+Do not commit `.env`. The bundled font catalog and direct image URLs work without keys. A client-side browser extension cannot make a bundled access key secret from a determined user; production Unsplash deployments should use a restricted key and follow Unsplash's current API terms.
 
 ## Testing
 
-Run unit tests:
+Run the full validation chain:
 
 ```bash
-npm test
+npm run validate
 ```
+
+That checks formatting, TypeScript, Vitest unit tests, ESLint, and production builds.
 
 Run the extension-page Playwright smoke test after installing Chromium:
 
@@ -217,6 +244,8 @@ npx playwright install chromium
 npm run build
 RUN_EXTENSION_E2E=1 npm run test:e2e
 ```
+
+GitHub Actions also validates the repository on both Ubuntu and Windows, verifies package creation on both platforms, audits production dependencies on Ubuntu, and runs the Chromium extension smoke test.
 
 Manual acceptance:
 
@@ -228,13 +257,20 @@ Manual acceptance:
 6. Open **Fonts**, filter by Arabic, preview a family, and apply a weight to the selection.
 7. Confirm Undo and Redo.
 8. Save, reload the page, and confirm styles and the selected font reapply.
-9. Export CSS and verify selector grouping and the single Google Fonts import.
-10. Disable the editor and confirm its controls disappear while saved CSS remains.
-11. Reset the page and confirm local overrides and the saved domain design are removed.
+9. Open Settings and confirm **Backup all designs** is available.
+10. Export CSS and verify selector grouping and the single Google Fonts import.
+11. Disable the editor and confirm its controls disappear while saved CSS remains.
+12. Reset the page and confirm local overrides and the saved domain design are removed.
+
+## Continuous integration and releases
+
+Pull requests and pushes to `main` run cross-platform validation. When `public/manifest.json` changes on `main`, the release workflow validates the project again, packages the extension, and publishes the matching `v<version>` GitHub Release with `visual-style-editor-extension.zip` attached.
+
+Release history: [CHANGELOG.md](CHANGELOG.md).
 
 ## Current phase boundaries
 
-The following product-specification items are planned for the later phases and are not falsely advertised as part of this MVP:
+The following product-specification items are planned for later phases and are not advertised as part of the current release:
 
 - Drag handles, snapping, visual resize/reorder, and distance guides.
 - Persistent local text overrides and JSON text export.
@@ -251,7 +287,7 @@ Read [PRIVACY.md](PRIVACY.md) and [docs/STORE_LISTING.md](docs/STORE_LISTING.md)
 
 1. Update the support email and privacy-policy URL.
 2. Run all validation commands.
-3. Test on a clean Chrome profile.
+3. Test on a clean browser profile.
 4. Create the required screenshots and promotional assets.
 5. Run `npm run package`.
 6. Upload `visual-style-editor-extension.zip` to the Chrome Web Store dashboard.

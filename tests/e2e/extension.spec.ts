@@ -27,6 +27,7 @@ test("popup and settings pages load from the built extension", async () => {
 
     await page.goto(`chrome-extension://${extensionId}/options.html`);
     await expect(page.getByText("Saved domain designs")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Backup all designs" })).toBeVisible();
   } finally {
     await context.close();
   }
