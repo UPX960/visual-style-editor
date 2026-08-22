@@ -87,7 +87,7 @@ export function OptionsApp() {
             </div>
           </div>
           <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] text-white/55">
-            Pro 0.2.0
+            Pro 0.3.0
           </span>
         </div>
       </header>
