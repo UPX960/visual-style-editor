@@ -12,7 +12,7 @@ import {
 import { useEffect, useState } from "react";
 import type { DesignProject, EditorSettings } from "../types";
 import { DEFAULT_SETTINGS } from "../utils/constants";
-import { downloadTextFile } from "../utils/css";
+import { downloadTextFile, serializeDesignBackup } from "../utils/css";
 import {
   getSettings,
   listDesigns,
@@ -57,6 +57,15 @@ export function OptionsApp() {
     downloadTextFile(
       `${design.hostname}-visual-style.json`,
       JSON.stringify(design, null, 2),
+      "application/json"
+    );
+  };
+
+  const exportAllDesigns = () => {
+    const date = new Date().toISOString().slice(0, 10);
+    downloadTextFile(
+      `visual-style-editor-backup-${date}.json`,
+      serializeDesignBackup(designs),
       "application/json"
     );
   };
@@ -186,9 +195,20 @@ export function OptionsApp() {
                 Enabled designs are reapplied when their domain opens.
               </p>
             </div>
-            <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-semibold text-slate-600">
-              {designs.length}
-            </span>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={exportAllDesigns}
+                disabled={designs.length === 0}
+                className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-[10px] font-semibold text-slate-600 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                <Download size={13} />
+                Backup all designs
+              </button>
+              <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-semibold text-slate-600">
+                {designs.length}
+              </span>
+            </div>
           </div>
 
           {designs.length === 0 ? (
