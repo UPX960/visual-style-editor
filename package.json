@@ -1,8 +1,8 @@
 {
   "name": "visual-style-editor",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
-  "description": "A browser-local no-code visual CSS editor for Chrome.",
+  "description": "A browser-local no-code visual CSS editor for Chrome and Chromium-based browsers.",
   "type": "module",
   "scripts": {
     "dev": "vite",
