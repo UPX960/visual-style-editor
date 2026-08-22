@@ -161,6 +161,18 @@ export function ruleDeclarationsToInlineCss(rule: StyleRule): string {
   return formatDeclarations(rule.declarations).join("\n");
 }
 
+export function serializeDesignBackup(designs: DesignProject[]): string {
+  return JSON.stringify(
+    {
+      schemaVersion: 1,
+      exportedAt: new Date().toISOString(),
+      designs
+    },
+    null,
+    2
+  );
+}
+
 export function downloadTextFile(filename: string, content: string, type: string): void {
   const blob = new Blob([content], { type });
   const url = URL.createObjectURL(blob);
