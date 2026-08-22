@@ -25,9 +25,7 @@ describe("design backup export", () => {
     expect(typeof serializer).toBe("function");
     if (typeof serializer !== "function") return;
 
-    const output = (serializer as (designs: DesignProject[]) => string)([
-      exampleDesign
-    ]);
+    const output = (serializer as (designs: DesignProject[]) => string)([exampleDesign]);
     const backup = JSON.parse(output) as {
       schemaVersion: number;
       exportedAt: string;
