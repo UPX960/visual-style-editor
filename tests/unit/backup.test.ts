@@ -19,9 +19,8 @@ const exampleDesign: DesignProject = {
 
 describe("design backup export", () => {
   it("serializes all saved designs into a versioned backup document", () => {
-    const serializer = (cssUtils as unknown as Record<string, unknown>)[
-      "serializeDesignBackup"
-    ];
+    const cssModule = cssUtils as unknown as Record<string, unknown>;
+    const serializer = cssModule.serializeDesignBackup;
 
     expect(typeof serializer).toBe("function");
     if (typeof serializer !== "function") return;
